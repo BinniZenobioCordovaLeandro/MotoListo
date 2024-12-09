@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "723023185227",
+    "project_id": "moto-listo",
+    "storage_bucket": "moto-listo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723023185227:android:984ce9d169918c76e094ce",
+        "android_client_info": {
+          "package_name": "com.motolisto.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANFCK4RHnbKjE0-HN2Y1Ph-9wTlhnm7ME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

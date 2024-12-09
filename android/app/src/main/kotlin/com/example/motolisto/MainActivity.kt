@@ -1,4 +1,4 @@
-package com.example.motolisto
+package com.motolisto.app
 
 import io.flutter.embedding.android.FlutterActivity
 
