@@ -1,0 +1,58 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "moto-listo",
+          "appId": "1:723023185227:android:984ce9d169918c76e094ce",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "moto-listo",
+          "appId": "1:723023185227:ios:065ff2163bcf4227e094ce",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "moto-listo",
+          "appId": "1:723023185227:ios:065ff2163bcf4227e094ce",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "moto-listo",
+          "configurations": {
+            "android": "1:723023185227:android:984ce9d169918c76e094ce",
+            "ios": "1:723023185227:ios:065ff2163bcf4227e094ce",
+            "macos": "1:723023185227:ios:065ff2163bcf4227e094ce",
+            "web": "1:723023185227:web:d1dcca506c4be2a8e094ce",
+            "windows": "1:723023185227:web:037e32990c961d8ce094ce"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}
