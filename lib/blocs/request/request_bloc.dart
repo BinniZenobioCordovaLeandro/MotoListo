@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:motolisto/hooks/use_position.dart';
 import 'package:motolisto/hooks/use_request.dart';
@@ -8,7 +8,7 @@ import 'package:motolisto/hooks/use_vehicles.dart';
 part 'request_event.dart';
 part 'request_state.dart';
 
-class RequestBloc extends Bloc<RequestEvent, RequestState> {
+class RequestBloc extends HydratedBloc<RequestEvent, RequestState> {
   RequestBloc() : super(RequestInitial()) {
     on<LoadRequest>((event, emit) async {
       emit(RequestLoading());
@@ -29,7 +29,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         // Aquí puedes agregar la lógica para solicitar el servicio de tuk-tuk usando la ubicación actual
         print('Ubicación actual: ${position.latitude}, ${position.longitude}');
 
-        await sendRequestToFirestore(position).then((stream) {
+        await streamRequestDocument().then((stream) {
           stream.listen((snapshot) {
             if (snapshot.exists) {
               Map<String, dynamic> data =
@@ -41,6 +41,8 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
             }
           });
         });
+
+        await sendRequest(position);
 
         getNearVehicles(position, 50).then((value) {
           print('Vehículos cercanos: $value');
@@ -84,5 +86,35 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         emit(RequestPending());
       }
     });
+  }
+
+  @override
+  RequestState? fromJson(Map<String, dynamic> json) {
+    if ([
+      'RequestPending',
+      'RequestAccepted',
+      'RequestArrived',
+      'RequestGoing',
+    ].contains(json['state'])) {
+      streamRequestDocument().then((stream) {
+        stream.listen((snapshot) {
+          if (snapshot.exists) {
+            Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+            print('Document data: ${data}');
+            add(RequestChanged(data['status'] as String));
+          } else {
+            print('Document does not exist');
+          }
+        });
+      });
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(RequestState state) {
+    return {
+      'state': state.runtimeType.toString(),
+      'message': (state is RequestError) ? state.message : '',
+    };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 openMap(latitud, longitud) async {
@@ -37,5 +38,16 @@ openSettings() async {
     await launchUrl(uri);
   } else {
     throw 'Could not open the settings.';
+  }
+}
+
+openStore() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  Uri uri = Uri.parse(
+      'https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri);
+  } else {
+    throw 'Could not open the store.';
   }
 }

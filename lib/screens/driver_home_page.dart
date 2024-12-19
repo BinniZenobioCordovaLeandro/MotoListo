@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:motolisto/blocs/bloc/service_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:motolisto/blocs/service/service_bloc.dart';
 import 'package:motolisto/blocs/location/location_bloc.dart';
 import 'package:motolisto/hooks/use_client.dart';
+import 'package:motolisto/hooks/use_position.dart';
 import 'package:motolisto/hooks/use_url.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -170,7 +172,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               'En camino',
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
-                            Text('Dirígete al destino'),
+                            Text('Dirígete al destino indicado por el cliente'),
                             Divider(),
                             Text('¿Llegaste al destino?'),
                             OutlinedButton.icon(
@@ -214,10 +216,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         itemCount: clients.length,
                         itemBuilder: (context, index) {
                           final client = clients[index];
+                          Position vehiclePosition = (context
+                                  .read<LocationBloc>()
+                                  .state as LocationTracking)
+                              .position;
+                          GeoPoint clientPosition = client['position'];
+                          final distanceInBlocs = distanceInBlocks(
+                              vehiclePosition.latitude,
+                              vehiclePosition.longitude,
+                              clientPosition.latitude,
+                              clientPosition.longitude);
                           return ListTile(
-                            title: Text("a 500 metros de distancia"),
-                            subtitle: Text(
-                                'Lat: ${client['position'].latitude}, Lng: ${client['position'].longitude}'),
+                            title: Text(
+                                "Cliente ${client['user'].substring(0, 9)}"),
+                            subtitle: Text('Está a $distanceInBlocs de ti'),
                             trailing: OutlinedButton.icon(
                               icon: Icon(Icons.directions),
                               onPressed: () {

@@ -6,14 +6,14 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:motolisto/hooks/use_url.dart';
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint('🎸🎸🎸 onBackgroundMessage: $message');
+  showFlutterNotification(message);
+}
+
 initializeMessaging() async {
   await checkMessagingPermission();
   FirebaseMessaging.instance.setAutoInitEnabled(true);
-  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
-    debugPrint('🎸🎸🎸 onBackgroundMessage: $message');
-    showFlutterNotification(message);
-    return Future<void>.value();
-  });
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     debugPrint('🎸🎸🎸 onMessage: $message');
     showFlutterNotification(message);
@@ -22,6 +22,7 @@ initializeMessaging() async {
     debugPrint('🎸🎸🎸 onMessageOpenedApp: $message');
     showFlutterNotification(message);
   });
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 }
 
 Future<void> checkMessagingPermission() async {

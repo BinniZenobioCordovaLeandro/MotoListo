@@ -63,3 +63,24 @@ Stream<Position> streamPosition() {
     ),
   );
 }
+
+double distanceBetween(
+  double lat1,
+  double lon1,
+  double lat2,
+  double lon2,
+) {
+  return Geolocator.distanceBetween(lat1, lon1, lat2, lon2);
+}
+
+String distanceInBlocks(
+  double lat1,
+  double lon1,
+  double lat2,
+  double lon2,
+) {
+  double meters = distanceBetween(lat1, lon1, lat2, lon2) / 200;
+  String cuadras = meters.toStringAsFixed(0) + " cuadras";
+  String yMedia = meters % 1 > 0 ? " y media" : "";
+  return cuadras + yMedia;
+}

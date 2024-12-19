@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage>
     _animationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
-    )..repeat(reverse: true);
+    )..repeat(reverse: true, min: 0.5, max: 1);
     _animation = CurvedAnimation(
       parent: _animationController!,
       curve: Curves.easeInOut,
@@ -56,23 +56,41 @@ class _HomePageState extends State<HomePage>
         builder: (context, state) {
           if (state is RequestInitial) {
             return Center(
-              child: ScaleTransition(
-                scale: _animation!,
-                child: FloatingActionButton.large(
-                  autofocus: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ScaleTransition(
+                    scale: _animation!,
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.local_taxi_outlined),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(200, 100),
+                        backgroundColor: Colors.yellow,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      autofocus: true,
+                      onPressed: () {
+                        context.read<RequestBloc>().add(SubmitRequest());
+                      },
+                      label: Text(
+                        'Solicitar\nmoto-taxi\na mi ubicación',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  onPressed: () {
-                    context.read<RequestBloc>().add(SubmitRequest());
-                  },
-                  child: Text(
-                    '''Solicitar
-Moto-taxi''',
+                  Divider(),
+                  Text(
+                    'Presiona el botón para solicitar una Moto-taxi',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  backgroundColor: Colors.yellow,
-                ),
+                  Text(
+                    'El conductor más cercano a tu ubicación actual te atenderá',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
               ),
             );
           } else if (state is RequestLoading) {
@@ -144,17 +162,24 @@ Moto-taxi''',
               ],
             );
           } else if (state is RequestGoing) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.local_taxi_outlined, size: 100, color: Colors.green),
-                SizedBox(height: 20),
-                Text(
-                  'ESTAMOS EN VIAJE',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.local_taxi_outlined,
+                      size: 100, color: Colors.green),
+                  SizedBox(height: 20),
+                  Text(
+                    'ESTAMOS EN VIAJE',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Por favor abróchate el cinturón, y disfruta del viaje',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  )
+                ],
+              ),
             );
           } else if (state is RequestCompleted) {
             return Column(
@@ -163,9 +188,13 @@ Moto-taxi''',
                 Icon(Icons.check_circle, size: 100, color: Colors.green),
                 SizedBox(height: 20),
                 Text(
-                  'SERVICIO COMPLETADO',
+                  'LLEGAMOS A TU DESTINO',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Gracias por usar MotoListo, gracias por confiar en nosotros',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Divider(),
                 OutlinedButton.icon(

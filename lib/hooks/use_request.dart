@@ -5,8 +5,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:motolisto/hooks/use_messaging.dart';
 
-Future<Stream<DocumentSnapshot<Object?>>> sendRequestToFirestore(
-    Position position) async {
+Future<Stream<DocumentSnapshot<Object?>>> streamRequestDocument() async {
+  CollectionReference clients =
+      FirebaseFirestore.instance.collection('clients');
+  DocumentReference clientDoc =
+      clients.doc(FirebaseAuth.instance.currentUser!.uid);
+  return await clientDoc.snapshots();
+}
+
+Future<void> sendRequest(Position position) async {
   FirebaseMessaging.instance.requestPermission();
   CollectionReference clients =
       FirebaseFirestore.instance.collection('clients');
@@ -21,8 +28,7 @@ Future<Stream<DocumentSnapshot<Object?>>> sendRequestToFirestore(
     'phone': FirebaseAuth.instance.currentUser!.phoneNumber,
     'timestamp': FieldValue.serverTimestamp(),
   });
-
-  return await clientDoc.snapshots();
+  return;
 }
 
 Future<void> cancelRequest() async {

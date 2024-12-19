@@ -1,11 +1,11 @@
-import 'package:bloc/bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:motolisto/hooks/use_service.dart';
 
 part 'service_event.dart';
 part 'service_state.dart';
 
-class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
+class ServiceBloc extends HydratedBloc<ServiceEvent, ServiceState> {
   String? currentDocumentId;
   Map<String, dynamic>? currentData;
 
@@ -14,10 +14,13 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       // TODO: implement event handler
     });
 
-    on<AcceptService>((event, emit) {
+    on<AcceptService>((event, emit) async {
       try {
         currentDocumentId = event.documentId;
-        acceptServiceFromFirestore(event.documentId).then((stream) {
+
+        await acceptService(event.documentId);
+
+        await streamServiceDocument(event.documentId).then((stream) {
           stream.listen((snapshot) {
             if (snapshot.exists) {
               Map<String, dynamic> data =
@@ -61,4 +64,33 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       }
     });
   }
+
+  @override
+  ServiceState? fromJson(Map<String, dynamic> json) {
+    if ([
+      'ServiceAccepted',
+      'ServiceArrived',
+      'ServiceGoing',
+      'ServiceCompleted',
+    ].contains(json['state'])) {
+      this.currentDocumentId = json['documentId'] as String?;
+      streamServiceDocument(currentDocumentId!).then((stream) {
+        stream.listen((snapshot) {
+          if (snapshot.exists) {
+            Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+            print('Document data: ${data}');
+            add(ServiceChanged(data['status'] as String));
+          } else {
+            print('Document does not exist');
+          }
+        });
+      });
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(ServiceState state) => {
+        'state': state.runtimeType.toString(),
+        'documentId': currentDocumentId,
+      };
 }

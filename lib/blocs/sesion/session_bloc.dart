@@ -1,11 +1,11 @@
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'session_event.dart';
 part 'session_state.dart';
 
-class SessionBloc extends Bloc<SessionEvent, SessionState> {
+class SessionBloc extends HydratedBloc<SessionEvent, SessionState> {
   SessionBloc() : super(SessionInitial()) {
     on<SessionStarted>((event, emit) async {
       // Aquí puedes verificar si hay una sesión activa
@@ -19,15 +19,30 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     });
 
     on<SessionLoggedIn>((event, emit) async {
-      // Aquí puedes guardar la sesión
-      // await _storePhoneNumber(event.phoneNumber);
       emit(SessionAuthenticated(event.phoneNumber));
     });
 
     on<SessionLoggedOut>((event, emit) async {
-      // Aquí puedes eliminar la sesión
-      // await _clearStoredPhoneNumber();
+      FirebaseAuth.instance.signOut();
       emit(SessionUnauthenticated());
     });
   }
+
+  @override
+  SessionState? fromJson(Map<String, dynamic> json) {
+    switch (json['state'] as String) {
+      case 'SessionAuthenticated':
+        return SessionAuthenticated(json['phoneNumber'] as String);
+      case 'SessionUnauthenticated':
+        return SessionUnauthenticated();
+      default:
+        return SessionInitial();
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(SessionState state) => {
+        'state': state.runtimeType.toString(),
+        if (state is SessionAuthenticated) 'phoneNumber': state.phoneNumber,
+      };
 }

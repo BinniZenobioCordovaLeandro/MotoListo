@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:motolisto/blocs/sesion/session_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -13,6 +15,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormBuilderState>();
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
 
@@ -46,6 +49,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signInWithPhoneNumber() async {
+    String smsCode = _codeController.text.trim();
+    if (smsCode.length != 6) {
+      return;
+    }
     final credential = PhoneAuthProvider.credential(
       verificationId: _verificationId,
       smsCode: _codeController.text.trim(),
@@ -80,48 +87,61 @@ class _LoginPageState extends State<LoginPage> {
           if (state is SessionInitial) {
             return Padding(
               padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  if (_verificationId.isEmpty) ...[
-                    InternationalPhoneNumberInput(
-                      initialValue: PhoneNumber(isoCode: 'PE'),
-                      onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
-                        _phoneController.text = number.phoneNumber!;
-                      },
-                      inputDecoration: InputDecoration(
-                        labelText: 'Número de teléfono',
-                        hintText: '990 000 000',
+              child: FormBuilder(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    if (_verificationId.isEmpty) ...[
+                      InternationalPhoneNumberInput(
+                        initialValue: PhoneNumber(isoCode: 'PE'),
+                        onInputChanged: (PhoneNumber number) {
+                          print(number.phoneNumber);
+                          _phoneController.text = number.phoneNumber!;
+                        },
+                        inputDecoration: InputDecoration(
+                          labelText: 'Número de teléfono',
+                          hintText: '990 000 000',
+                        ),
+                        keyboardType: TextInputType.phone,
+                        selectorConfig: SelectorConfig(
+                            selectorType: PhoneInputSelectorType.BOTTOM_SHEET),
                       ),
-                      keyboardType: TextInputType.phone,
-                      selectorConfig: SelectorConfig(
-                          selectorType: PhoneInputSelectorType.BOTTOM_SHEET),
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _verifyPhoneNumber,
-                      child: Text('Enviar código'),
-                    ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _verifyPhoneNumber,
+                        child: Text('Enviar código'),
+                      ),
+                    ],
+                    if (_verificationId.isNotEmpty) ...[
+                      SizedBox(height: 16),
+                      Pinput(
+                        length: 6,
+                        controller: _codeController,
+                        keyboardType: TextInputType.number,
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(),
+                          FormBuilderValidators.numeric(),
+                          FormBuilderValidators.minLength(6),
+                        ]),
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState?.saveAndValidate() ??
+                              false) {
+                            _signInWithPhoneNumber();
+                            context
+                                .read<SessionBloc>()
+                                .add(SessionLoggedIn(_phoneController.text));
+                          } else {
+                            print('Validation failed');
+                          }
+                        },
+                        child: Text('Verificar código'),
+                      ),
+                    ],
                   ],
-                  if (_verificationId.isNotEmpty) ...[
-                    SizedBox(height: 16),
-                    Pinput(
-                      length: 6,
-                      controller: _codeController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        _signInWithPhoneNumber();
-                        context
-                            .read<SessionBloc>()
-                            .add(SessionLoggedIn(_phoneController.text));
-                      },
-                      child: Text('Verificar código'),
-                    ),
-                  ],
-                ],
+                ),
               ),
             );
           } else if (state is SessionAuthenticated) {

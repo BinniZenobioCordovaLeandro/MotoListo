@@ -1,22 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:motolisto/blocs/bloc/service_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:motolisto/blocs/service/service_bloc.dart';
 import 'package:motolisto/blocs/location/location_bloc.dart';
 import 'package:motolisto/blocs/sesion/session_bloc.dart';
 import 'package:motolisto/blocs/request/request_bloc.dart';
+import 'package:motolisto/hooks/use_config.dart';
 import 'package:motolisto/hooks/use_messaging.dart';
 import 'package:motolisto/screens/driver_home_page.dart';
 import 'package:motolisto/screens/home_page.dart';
 import 'package:motolisto/screens/login_page.dart';
 import 'package:motolisto/screens/onboarding_page.dart';
 import 'package:motolisto/screens/requests_page.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   initializeMessaging();
+  FirebaseRemoteConfig.instance.fetchAndActivate();
+  validateMinimumVersion();
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
   runApp(const MyApp());
 }
 
