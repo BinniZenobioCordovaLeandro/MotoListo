@@ -44,14 +44,30 @@ class RequestBloc extends HydratedBloc<RequestEvent, RequestState> {
 
         await sendRequest(position);
 
-        getNearVehicles(position, 50).then((value) {
-          print('Vehículos cercanos: $value');
-          List<String> tokens =
-              value.map<String>((e) => e['token'] as String).toList();
-          sendNotificationToNearbyVehicles(tokens);
-        });
+        double meters = 1000;
+        var vehicles = await getNearVehicles(position, meters);
+        // if (vehicles.isEmpty) {
+        //   meters = meters * 2;
+        //   emit(RequestPending(
+        //       'Aumentando radio de búsqueda a ${meters} metros'));
+        //   vehicles = await getNearVehicles(position, meters);
+        // }
+        // if (vehicles.isEmpty) {
+        //   meters = meters * 2;
+        //   emit(RequestPending(
+        //       'Aumentando radio de búsqueda a ${meters} metros'));
+        //   vehicles = await getNearVehicles(position, meters);
+        // }
 
-        emit(RequestPending());
+        if (vehicles.isNotEmpty) {
+          List<String> tokens =
+              vehicles.map<String>((e) => e['token'] as String).toList();
+          sendNotificationToNearbyVehicles(tokens);
+          emit(RequestPending(
+              'Buscando vehículos disponibles a ${meters} metros'));
+        } else {
+          emit(RequestError('No hay vehículos disponibles'));
+        }
       } catch (e) {
         emit(RequestError(e.toString()));
       }
@@ -82,8 +98,10 @@ class RequestBloc extends HydratedBloc<RequestEvent, RequestState> {
         emit(RequestCompleted());
       } else if (event.status == 'cancelled') {
         emit(RequestCancelled());
+      } else if (event.status == 'timeout') {
+        emit(RequestTimeout());
       } else {
-        emit(RequestPending());
+        emit(RequestPending('Buscando vehículos disponibles'));
       }
     });
   }

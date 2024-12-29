@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar sesión'),
+        title: Text(''),
       ),
       body: BlocBuilder<SessionBloc, SessionState>(
         builder: (context, state) {
@@ -92,6 +92,18 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     if (_verificationId.isEmpty) ...[
+                      Text(
+                        'Ingresa tu número de teléfono para verificar tu identidad',
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.phone_android,
+                        size: 100,
+                      ),
+                      Spacer(),
+                      SizedBox(height: 16),
                       InternationalPhoneNumberInput(
                         initialValue: PhoneNumber(isoCode: 'PE'),
                         onInputChanged: (PhoneNumber number) {
@@ -103,30 +115,40 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: '990 000 000',
                         ),
                         keyboardType: TextInputType.phone,
+                        autoFocus: true,
                         selectorConfig: SelectorConfig(
                             selectorType: PhoneInputSelectorType.BOTTOM_SHEET),
                       ),
                       SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _verifyPhoneNumber,
-                        child: Text('Enviar código'),
+                        child: Text('Enviame el código de verificación'),
                       ),
                     ],
                     if (_verificationId.isNotEmpty) ...[
+                      Text(
+                        'Ingresa el código de verificación que recibiste por SMS al número ${_phoneController.text}',
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.sms_outlined,
+                        size: 100,
+                      ),
+                      Spacer(),
                       SizedBox(height: 16),
                       Pinput(
                         length: 6,
                         controller: _codeController,
                         keyboardType: TextInputType.number,
+                        autofocus: true,
                         validator: FormBuilderValidators.compose([
                           FormBuilderValidators.required(),
                           FormBuilderValidators.numeric(),
                           FormBuilderValidators.minLength(6),
                         ]),
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
+                        onCompleted: (value) {
                           if (_formKey.currentState?.saveAndValidate() ??
                               false) {
                             _signInWithPhoneNumber();
@@ -137,17 +159,37 @@ class _LoginPageState extends State<LoginPage> {
                             print('Validation failed');
                           }
                         },
-                        child: Text('Verificar código'),
                       ),
+                      SizedBox(height: 16),
                     ],
                   ],
                 ),
               ),
             );
           } else if (state is SessionAuthenticated) {
-            return Center(child: Text('Welcome, ${state.phoneNumber}'));
+            return Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Bienvenido, ${state.phoneNumber}'),
+                Text('Has iniciado sesión correctamente'),
+              ],
+            ));
           } else if (state is SessionUnauthenticated) {
-            return Center(child: Text('Please log in'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('No has iniciado sesión'),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<SessionBloc>().add(SessionLoggedIn(''));
+                    },
+                    child: Text('Log in'),
+                  ),
+                ],
+              ),
+            );
           }
           return Container();
         },

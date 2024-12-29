@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage>
             icon: Icon(Icons.logout),
             onPressed: () {
               context.read<SessionBloc>().add(SessionLoggedOut());
+              Navigator.pushReplacementNamed(context, '/login');
             },
           ),
           IconButton(
@@ -114,17 +115,19 @@ class _HomePageState extends State<HomePage>
                 OutlinedButton.icon(
                   label: Text('Cancelar solicitud'),
                   icon: Icon(Icons.cancel),
-                  onPressed: () {},
-                  onLongPress: () {
-                    context.read<RequestBloc>().add(CancelRequest());
-                  },
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'Manten presionado para CANCELAR la solicitud'))),
+                  onLongPress: () =>
+                      context.read<RequestBloc>().add(CancelRequest()),
                 ),
                 Divider(),
                 Spacer(),
                 CircularProgressIndicator(),
                 SizedBox(height: 20),
                 Text(
-                  'Esperando confirmación de un CONDUCTOR...',
+                  state.message ?? 'Esperando confirmación de un CONDUCTOR...',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
@@ -206,12 +209,40 @@ class _HomePageState extends State<HomePage>
                 ),
               ],
             );
+          } else if (state is RequestTimeout) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Spacer(),
+                Icon(Icons.timer_off, size: 100, color: Colors.orange),
+                SizedBox(height: 20),
+                Text(
+                  'TIEMPO DE ESPERA AGOTADO',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'No se encontró un conductor disponible en tu zona, inténtalo de nuevo',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                Spacer(),
+                Divider(),
+                OutlinedButton.icon(
+                  label: Text('Volver al inicio'),
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    context.read<RequestBloc>().add(CloseRequest());
+                  },
+                ),
+              ],
+            );
           } else if (state is RequestCancelled) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Spacer(),
-                Icon(Icons.cancel, size: 100, color: Colors.red),
+                Icon(Icons.cancel, size: 100, color: Colors.orange),
                 SizedBox(height: 20),
                 Text(
                   'SOLICITUD CANCELADA',

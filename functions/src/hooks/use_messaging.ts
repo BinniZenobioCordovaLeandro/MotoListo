@@ -2,28 +2,22 @@ import {logger} from "firebase-functions/v2";
 import * as admin from "firebase-admin";
 import {
   BaseMessage,
-  BatchResponse,
 } from "firebase-admin/lib/messaging/messaging-api";
 
 export const sendMessage = (
-  token: string[],
+  tokens: string[],
   title: string,
-  body: string
+  message: string
 ) => {
   return new Promise((resolve, reject) => {
-    const content = {
-      title,
-      body,
-    };
-
-    const message: BaseMessage = {
-      notification: content,
-      android: {
-        notification: content,
+    const baseMessage: BaseMessage = {
+      notification: {
+        title,
+        body: message,
       },
     };
 
-    const onSuccess = (response: BatchResponse) => {
+    const onSuccess = (response: any) => {
       logger.info("🎸🎸🎸 Messaging logs!", response);
       if (response.failureCount > 0) {
         logger.error("🐛🐛🐛 Failed to send message to some tokens:", response);
@@ -40,7 +34,13 @@ export const sendMessage = (
       reject(error);
     };
 
-    admin.messaging().sendMulticast({...message, tokens: token})
-      .then(onSuccess).catch(onError);
+    tokens.forEach((token) =>
+      admin.messaging().send({
+        token,
+        ...baseMessage,
+      })
+        .then(onSuccess)
+        .catch(onError)
+    );
   });
 };

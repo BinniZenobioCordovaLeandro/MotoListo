@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
-Future<List> getNearVehicles(Position position, double kilometers) {
+Future<List> getNearVehicles(Position position, double metros) {
   CollectionReference vehicles =
       FirebaseFirestore.instance.collection('vehicles');
   final center = GeoPoint(position.latitude, position.longitude);
-  final radius = kilometers / 111.12;
+  final radius = metros / 1000;
   return vehicles
       .where('position',
           isLessThanOrEqualTo:

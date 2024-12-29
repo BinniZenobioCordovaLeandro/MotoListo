@@ -61,7 +61,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Tu vehículo está ${isVehicleAvailable ? "Disponible" : "No Disponible"}',
+                isVehicleAvailable
+                    ? 'Disponible para viajes'
+                    : 'No disponible para viajes',
                 style: TextStyle(fontSize: 20),
               ),
               Divider(),
@@ -96,7 +98,33 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               'Servicio Aceptado',
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
-                            Text('Dirígete al punto de recogida'),
+                            Text(
+                                'Primero, comunícate con el cliente para confirmar el servicio'),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton.icon(
+                                    label: Text('Llamar'),
+                                    icon: Icon(Icons.phone),
+                                    onPressed: () {
+                                      openPhone(state.data['phone']);
+                                    },
+                                  ),
+                                  ElevatedButton.icon(
+                                    label: Text('WhatsApp'),
+                                    icon: Icon(Icons.message),
+                                    onPressed: () {
+                                      openWhatsApp(state.data['phone']);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                                'Luego dirígete al punto de recogida usando el mapa'),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
@@ -110,20 +138,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                           state.data['position'];
                                       openMap(position.latitude,
                                           position.longitude);
-                                    },
-                                  ),
-                                  ElevatedButton.icon(
-                                    label: Text('Llamar'),
-                                    icon: Icon(Icons.phone),
-                                    onPressed: () {
-                                      openPhone(state.data['phone']);
-                                    },
-                                  ),
-                                  ElevatedButton.icon(
-                                    label: Text('WhatsApp'),
-                                    icon: Icon(Icons.message),
-                                    onPressed: () {
-                                      openWhatsApp(state.data['phone']);
                                     },
                                   ),
                                 ],

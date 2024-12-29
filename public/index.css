@@ -1,0 +1,205 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+    background-color: #F2E30C;
+}
+
+header {
+    background: #BF0449;
+    color: white;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+header ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+header ul li {
+    margin: 0 10px;
+}
+
+header ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.hero {
+    background: #582059;
+    text-align: center;
+    padding: 50px 20px;
+    color: white;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.hero img {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    display: block;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0) 80%);
+}
+
+.cta-button {
+    background: #F29F05;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.cta-button:hover {
+    background: #BF4D0B;
+}
+
+.benefits {
+    background: #fff;
+    padding: 40px 20px;
+}
+
+.benefits h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #BF0449;
+}
+
+.benefit-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.benefit-item {
+    background: #F2E30C;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-item h3 {
+    color: #BF0449;
+}
+
+.benefit-item object {
+    width: 100%;
+    max-width: 100px;
+    margin: 20px auto;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #582059;
+}
+
+.download {
+    background: #BF4D0B;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.download h2 {
+    margin-bottom: 20px;
+    color: #F2E30C;
+}
+
+.download-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.download-buttons .btn {
+    background: white;
+    color: #BF0449;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.download-buttons .btn:hover {
+    background: #F29F05;
+    color: white;
+}
+
+.download img {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    display: block;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.onboarding {
+    background: #F2E30C;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.onboarding h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #BF0449;
+}
+
+.onboarding img {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    display: block;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.onboarding p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.onboarding .download-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+footer {
+    background: #582059;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+}

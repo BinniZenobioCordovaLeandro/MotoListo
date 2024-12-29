@@ -99,16 +99,17 @@ Future sendNotificationCallable(List<String> tokens) async {
 
 Future sendNotification(List<String> tokens) async {
   Uri url = Uri.parse('https://sendnotification-w6y77l3ohq-uc.a.run.app');
+  String body = json.encode(<String, dynamic>{
+    "title": "Hay un cliente cerca esperando",
+    "message": "Revisa la lista de espera para atenderlo",
+    "tokens": tokens,
+  });
+  debugPrint("🎸🎸 body, $body");
+
   final response = await http.post(
     url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      "title": "Hay un cliente cerca esperando",
-      "body": "Revisa la lista de espera para atenderlo",
-      "tokens": jsonEncode(tokens.toList()),
-    }),
+    headers: {'Content-Type': 'application/json'},
+    body: body,
   );
 
   if (response.statusCode == 200) {

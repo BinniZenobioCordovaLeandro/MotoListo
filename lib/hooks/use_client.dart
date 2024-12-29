@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
-Future<List> getNearClients(Position position, double kilometers) async {
+Future<List> getNearClients(Position position, double meters) async {
   CollectionReference clients =
       FirebaseFirestore.instance.collection('clients');
   final center = GeoPoint(position.latitude, position.longitude);
-  final radius = kilometers / 111.12;
+  final radius = meters / 1000;
   return clients
       .where('position',
           isLessThanOrEqualTo:

@@ -23,6 +23,9 @@ class OnboardingPage extends StatelessWidget {
       'available': true,
       'position': GeoPoint(0, 0),
       'token': await FirebaseMessaging.instance.getToken(),
+      'privacy_policy_accepted': false,
+      'cost_accepeted': false,
+      'admittance_reserve_accepted': false,
     });
   }
 
@@ -36,7 +39,7 @@ class OnboardingPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: FormBuilder(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: <Widget>[
               FormBuilderTextField(
                 name: 'full_name',
@@ -83,6 +86,39 @@ class OnboardingPage extends StatelessWidget {
                 ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
+                ]),
+              ),
+              FormBuilderCheckbox(
+                name: 'privacy_policy_accepted',
+                title: Text('''Acepto la política de privacidad y los
+términos de uso de la aplicación MotoListo.'''),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.equal(true),
+                ]),
+              ),
+              FormBuilderCheckbox(
+                name: 'cost_accepeted',
+                title:
+                    Text('''Acepto el costo del uso de la aplicación MotoListo
+y de realizar el pago de la misma de forma puntual.
+DE: 1 SOL POR CADA DÍA DE USO DE LA APLICACIÓN.
+Cobrados al dia 7 de cada mes por yape.
+      '''),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.equal(true),
+                ]),
+              ),
+              FormBuilderCheckbox(
+                name: 'admittance_reserve_accepted',
+                title: Text('''Estoy de acuerdo en que la aplicación MotoListo
+se RESERVA EL DERECHO DE ADMISIÓN Y PERMANENCIA
+de mi usuario en la aplicación.
+      '''),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.equal(true),
                 ]),
               ),
               SizedBox(height: 20),

@@ -24,7 +24,7 @@ class SessionBloc extends HydratedBloc<SessionEvent, SessionState> {
 
     on<SessionLoggedOut>((event, emit) async {
       FirebaseAuth.instance.signOut();
-      emit(SessionUnauthenticated());
+      emit(SessionInitial());
     });
   }
 
